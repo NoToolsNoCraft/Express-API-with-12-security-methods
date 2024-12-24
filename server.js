@@ -23,19 +23,20 @@ let mockData = [
 
 // 1. HTTPS (Comment: Use HTTPS in production by setting up a reverse proxy like Nginx)
 // Check if SSL files exist
+const HTTPS_PORT = process.env.HTTPS_PORT || 3007;
+const HTTP_PORT = process.env.HTTP_PORT || 3006; // Ensure fallback HTTP uses a different port
+
 if (fs.existsSync('./certificate.crt') && fs.existsSync('./private.key')) {
-  console.log('SSL files found!');
   const options = {
     key: fs.readFileSync('./private.key'),
     cert: fs.readFileSync('./certificate.crt'),
   };
-  https.createServer(options, app).listen(3000, () => {
-    console.log('Secure server running on https://localhost:3000');
+  https.createServer(options, app).listen(HTTPS_PORT, '0.0.0.0', () => {
+    console.log(`Secure server running on https://0.0.0.0:${HTTPS_PORT}`);
   });
 } else {
-  console.log('SSL files not found, falling back to HTTP');
-  http.createServer(app).listen(4001, () => { // Changed port to 4001
-    console.log('Server running on http://localhost:4001');
+  http.createServer(app).listen(HTTP_PORT, () => {
+    console.log(`Server running on http://localhost:${HTTP_PORT}`);
   });
 }
   
@@ -125,6 +126,12 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // 7. API Versioning
+
+// Root Route
+app.get('/', (req, res) => {
+  res.send('Welcome to the Secure API! Please use the /v1/users endpoint.');
+}); 
+
 app.get('/v1/users', authenticateToken, (req, res) => {
   res.json(mockData);
 });
@@ -159,9 +166,9 @@ app.delete('/v1/users/:id', authenticateToken, (req, res) => {
 });
 
 // 8. Allowlisting
-const allowlist = ['127.0.0.1'];
+const allowlist = ['*'];
 app.use((req, res, next) => {
-  if (!allowlist.includes(req.ip)) {
+  if (allowlist[0] !== '*' && !allowlist.includes(req.ip)) {
     return res.status(403).json({ message: 'IP not allowed' });
   }
   next();
