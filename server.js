@@ -23,19 +23,23 @@ let mockData = [
 
 // 1. HTTPS (Comment: Use HTTPS in production by setting up a reverse proxy like Nginx)
 // Check if SSL files exist
-const HTTPS_PORT = process.env.HTTPS_PORT || 3007;
-const HTTP_PORT = process.env.HTTP_PORT || 3006; // Ensure fallback HTTP uses a different port
+// HTTPS configuration
+const HTTP_PORT = 3006; // For fallback HTTP (non-secure)
+const SSL_OPTIONS = {
+  key: fs.existsSync('./private.key') ? fs.readFileSync('./private.key') : null,
+  cert: fs.existsSync('./certificate.crt') ? fs.readFileSync('./certificate.crt') : null,
+};
 
-if (fs.existsSync('./certificate.crt') && fs.existsSync('./private.key')) {
-  const options = {
-    key: fs.readFileSync('./private.key'),
-    cert: fs.readFileSync('./certificate.crt'),
-  };
-  https.createServer(options, app).listen(HTTPS_PORT, '0.0.0.0', () => {
-    console.log(`Secure server running on https://0.0.0.0:${HTTPS_PORT}`);
+if (SSL_OPTIONS.key && SSL_OPTIONS.cert) {
+  const httpsServer = https.createServer(SSL_OPTIONS, app);
+  const securePort = 0; // 0 lets the OS choose an available port
+
+  httpsServer.listen(securePort, () => {
+    console.log(`Secure server running on https://localhost:${httpsServer.address().port}`);
   });
 } else {
-  http.createServer(app).listen(HTTP_PORT, () => {
+  console.warn('SSL files not found. Falling back to HTTP.');
+  app.listen(HTTP_PORT, () => {
     console.log(`Server running on http://localhost:${HTTP_PORT}`);
   });
 }
