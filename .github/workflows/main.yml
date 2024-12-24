@@ -1,0 +1,35 @@
+name: Secure API CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate SSL Certificates
+        run: |
+          openssl req -nodes -new -x509 -keyout private.key -out certificate.crt -days 365 -subj "/CN=localhost"
+        shell: bash
+
+      - name: Run Tests
+        run: |
+          node server.js &
+          sleep 5
+          curl -k https://localhost:3000/v1/users
+        env:
+          PORT: 3000
