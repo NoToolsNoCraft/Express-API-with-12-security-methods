@@ -24,20 +24,20 @@ let mockData = [
 // 1. HTTPS (Comment: Use HTTPS in production by setting up a reverse proxy like Nginx)
 // Check if SSL files exist
 if (fs.existsSync('./certificate.crt') && fs.existsSync('./private.key')) {
-    console.log('SSL files found!');
-    const options = {
-      key: fs.readFileSync('./private.key'),
-      cert: fs.readFileSync('./certificate.crt'),
-    };
-    https.createServer(options, app).listen(3000, () => {
-      console.log('Secure server running on https://localhost:3000');
-    });
-  } else {
-    console.log('SSL files not found, falling back to HTTP');
-    http.createServer(app).listen(3000, () => {
-      console.log('Server running on http://localhost:3000');
-    });
-  }
+  console.log('SSL files found!');
+  const options = {
+    key: fs.readFileSync('./private.key'),
+    cert: fs.readFileSync('./certificate.crt'),
+  };
+  https.createServer(options, app).listen(3000, () => {
+    console.log('Secure server running on https://localhost:3000');
+  });
+} else {
+  console.log('SSL files not found, falling back to HTTP');
+  http.createServer(app).listen(4001, () => { // Changed port to 4001
+    console.log('Server running on http://localhost:4001');
+  });
+}
   
 
 // 2. OAuth2 Authentication (Mock Implementation)
@@ -200,7 +200,7 @@ app.post('/validate', (req, res) => {
   res.json({ message: 'Validation successful' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Secure API is running on port ${PORT}`);
+const PORT = process.env.PORT || 0; // Use 0 to let the OS choose an available port
+const server = app.listen(PORT, () => {
+  console.log(`Secure API is running on port ${server.address().port}`);
 });
