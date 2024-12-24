@@ -29,3 +29,4 @@ jobs:
       - name: Run application
         run: |
           node server.js
+          
