@@ -35,12 +35,17 @@ jobs:
           NODE_ENV: test
 
       # Step 5: Run Cypress test for OAuth
+      - name: Verify Cypress installation
+        run: npx cypress --version
       - name: Run Cypress tests
         run: npx cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
-        env:
-          CYPRESS_baseUrl: https://localhost:4003
-          CYPRESS_email: $EMAIL
-          CYPRESS_password: $PASSWORD
+      - name: Fix Cypress permissions
+      - name: Run Cypress tests
+        run: ./node_modules/.bin/cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
+      env:
+            CYPRESS_baseUrl: https://localhost:4003
+            CYPRESS_email: $EMAIL
+            CYPRESS_password: $PASSWORD
 
       # Step 6: Install Newman
       - name: Install Newman
