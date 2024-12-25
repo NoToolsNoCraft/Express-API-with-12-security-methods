@@ -47,8 +47,8 @@ jobs:
         run: ./node_modules/.bin/cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
         env:
           CYPRESS_baseUrl: https://localhost:4003
-          CYPRESS_email: $EMAIL
-          CYPRESS_password: $PASSWORD
+          CYPRESS_email: ${{ secrets.EMAIL }}
+          CYPRESS_password: ${{ secrets.PASSWORD }}
 
 
       # Step 6: Install Newman
