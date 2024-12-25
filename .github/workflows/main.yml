@@ -42,16 +42,18 @@ jobs:
           CYPRESS_email: $EMAIL
           CYPRESS_password: $PASSWORD
 
-      # Step 6: Run Postman tests
-      - name: Run Postman tests
-        uses: dannydainton/gh-action-postman-pro-newman@v1
-        with:
-          collection: Express GitHub OAuth2 API.postman_collection.json
-          environment: New Environment.postman_environment.json
-          reporters: cli,junit
-          working-directory: ./
+      # Step 6: Install Newman
+      - name: Install Newman
+        run: npm install -g newman
 
-      # Step 7: Upload test results (optional)
+      # Step 7: Run Postman tests
+      - name: Run Postman tests
+        run: |
+          newman run "Express GitHub OAuth2 API.postman_collection.json" \
+          --environment "New Environment.postman_environment.json" \
+          --reporters cli,junit
+
+      # Step 8: Upload test results (optional)
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
