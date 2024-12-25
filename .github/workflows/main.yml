@@ -27,39 +27,34 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Reinstall Cypress
-      - name: Reinstall Cypress
-        run: npm install cypress --force
+      # Step 4: Cache Cypress binary
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
 
-      # Step 5: Verify node_modules/.bin content
-      - name: List node_modules/.bin
-        run: ls -la node_modules/.bin
+      # Step 5: Install Cypress binary
+      - name: Install Cypress binary
+        run: npx cypress install
 
-      # Step 6: Fix Cypress permissions
-      - name: Fix permissions for Cypress
-        run: chmod +x ./node_modules/.bin/cypress
-
-      # Step 7: Debug Node.js environment
-      - name: Debug Node.js environment
-        run: |
-          node -v
-          npm -v
-          npm list --depth=0
-
-      # Step 8: Start Express server
+      # Step 6: Start Express server
       - name: Start Express server
         run: |
           nohup node your-express-server.js &
         env:
           NODE_ENV: test
 
-      # Step 9: Run Cypress tests
+      # Step 7: Run Cypress tests
       - name: Run Cypress tests
         run: ./node_modules/.bin/cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
         env:
           CYPRESS_baseUrl: https://localhost:4003
           CYPRESS_email: $EMAIL
           CYPRESS_password: $PASSWORD
+
 
       # Step 6: Install Newman
       - name: Install Newman
