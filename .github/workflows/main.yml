@@ -1,32 +1,59 @@
-name: Deploy API with SSL
+name: API Testing with Postman and Cypress
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  api-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # Step 1: Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
+      # Step 2: Set up Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Create SSL certificates
+      # Step 4: Start the Express server
+      - name: Start Express server
         run: |
-          echo "${{ secrets.SSL_CERTIFICATE }}" > certificate.crt
-          echo "${{ secrets.SSL_PRIVATE_KEY }}" > private.key
+          nohup node your-express-server.js &
+        env:
+          NODE_ENV: test
 
-      - name: Run application
-        run: |
-          node server.js
-          
+      # Step 5: Run Cypress test for OAuth
+      - name: Run Cypress tests
+        run: npx cypress run --spec "cypress/integration/oauth-login.spec.js"
+        env:
+          CYPRESS_baseUrl: https://localhost:4003
+          CYPRESS_email: notoolsnocraft@gmail.com
+          CYPRESS_password: @12bgmice
+
+      # Step 6: Run Postman tests
+      - name: Run Postman tests
+        uses: dannydainton/gh-action-postman-pro-newman@v1
+        with:
+          collection: path/to/your/postman-collection.json
+          environment: path/to/your/postman-environment.json
+          reporters: cli,junit
+          working-directory: ./
+
+      # Step 7: Upload test results (optional)
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test-results
+          path: path/to/results/
