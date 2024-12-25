@@ -36,18 +36,18 @@ jobs:
 
       # Step 5: Run Cypress test for OAuth
       - name: Run Cypress tests
-        run: npx cypress run --spec "cypress/integration/oauth-login.spec.js"
+        run: npx cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
         env:
           CYPRESS_baseUrl: https://localhost:4003
-          CYPRESS_email: notoolsnocraft@gmail.com
-          CYPRESS_password: @12bgmice
+          CYPRESS_email: $EMAIL
+          CYPRESS_password: $PASSWORD
 
       # Step 6: Run Postman tests
       - name: Run Postman tests
         uses: dannydainton/gh-action-postman-pro-newman@v1
         with:
-          collection: path/to/your/postman-collection.json
-          environment: path/to/your/postman-environment.json
+          collection: Express GitHub OAuth2 API.postman_collection.json
+          environment: New Environment.postman_environment.json
           reporters: cli,junit
           working-directory: ./
 
