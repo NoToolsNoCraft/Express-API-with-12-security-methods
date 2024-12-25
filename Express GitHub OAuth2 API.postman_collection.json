@@ -1,0 +1,109 @@
+{
+	"info": {
+		"_postman_id": "d1b7cb24-fc86-44f0-937b-1acf7c96fcee",
+		"name": "Express GitHub OAuth2 API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35095642"
+	},
+	"item": [
+		{
+			"name": "Initial request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains welcome message\", function () {\r",
+							"    pm.response.to.have.body(\"Hello, this is an HTTPS server with GitHub OAuth2!\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:4003",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "4003"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const fs = require('fs');\r",
+							"\r",
+							"// Assuming you have your token.json file in the same directory as the Postman collection\r",
+							"const tokenData = JSON.parse(fs.readFileSync('token.json', 'utf8'));\r",
+							"\r",
+							"// Set the authCode environment variable\r",
+							"pm.environment.set('authCode', tokenData.url.split('code=')[1]);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Ov23liFT0AS4dhXuRSow",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "082cc776a1332a0568c2aa861b9480d3703a45c4",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "{{authCode}}",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "https://localhost:4003/auth/github/callback",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://github.com/login/oauth/access_token",
+					"protocol": "https",
+					"host": [
+						"github",
+						"com"
+					],
+					"path": [
+						"login",
+						"oauth",
+						"access_token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

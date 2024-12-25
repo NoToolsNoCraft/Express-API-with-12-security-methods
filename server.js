@@ -1,26 +1,27 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const fs = require('fs');  // Add this line to import fs
-const https = require('https');  // You also need to import https
-const http = require('http');    // And http for the fallback
+const https = require('https');
+const fs = require('fs');
+const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy;
+const session = require('express-session');
 const app = express();
 
-// Middleware setup
-app.use(helmet()); // Adds security headers
-app.use(cors()); // Configures CORS
-app.use(bodyParser.json()); // Parses JSON bodies
+// Load SSL certificates (with your chosen file names)
+const privateKey = fs.readFileSync('private.key', 'utf8');
+const certificate = fs.readFileSync('certificate.crt', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
-// Mock data
-let mockData = [
-  { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
-  { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
-  { id: 3, name: 'Alice Johnson', email: 'alice.johnson@example.com' },
-];
+// Set up Passport.js for GitHub OAuth2 authentication
+passport.use(new GitHubStrategy({
+  clientID: 'Ov23liFT0AS4dhXuRSow',  // Replace with your GitHub Client ID
+  clientSecret: '082cc776a1332a0568c2aa861b9480d3703a45c4',  // Replace with your GitHub Client Secret
+  callbackURL: 'https://localhost:4003/auth/github/callback',  // GitHub callback URL
+}, (accessToken, refreshToken, profile, done) => {
+  // Store user profile and token in the session or database
+  return done(null, { accessToken, profile });
+}));
 
+<<<<<<< Updated upstream
 // 1. HTTPS (Comment: Use HTTPS in production by setting up a reverse proxy like Nginx)
 // Check if SSL files exist
 // HTTPS configuration
@@ -67,40 +68,32 @@ const fido2 = new Fido2Lib({
   rpId: "yourdomain.com",
   rpName: "Your API Service",
   challengeSize: 32,
+=======
+// Serialize user info to store in session
+passport.serializeUser((user, done) => {
+  done(null, user);
+>>>>>>> Stashed changes
 });
 
-// Mock storage for registered credentials
-let credentials = {};
-
-// WebAuthn registration endpoint
-app.post('/webauthn/register', async (req, res) => {
-  const { username } = req.body;
-
-  const challenge = await fido2.assertionOptions();
-  credentials[username] = { challenge, registered: false };
-
-  res.json(challenge);
+// Deserialize user info from session
+passport.deserializeUser((user, done) => {
+  done(null, user);
 });
 
-// WebAuthn verification endpoint
-app.post('/webauthn/verify', async (req, res) => {
-  const { username, response } = req.body;
+// Middleware to initialize passport and manage sessions
+app.use(session({ secret: 'your-secret-key', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 
-  const storedChallenge = credentials[username];
-  if (!storedChallenge || storedChallenge.registered) {
-    return res.status(400).json({ message: 'Invalid or already registered' });
-  }
-
-  try {
-    await fido2.assertionResult(response, { challenge: storedChallenge.challenge });
-    credentials[username].registered = true;
-    res.json({ message: 'Authentication successful' });
-  } catch (err) {
-    res.status(400).json({ message: 'Authentication failed', error: err.message });
-  }
+// Basic route
+app.get('/', (req, res) => {
+  res.send('Hello, this is an HTTPS server with GitHub OAuth2!');
 });
 
+// OAuth2 login route for GitHub
+app.get('/auth/github', passport.authenticate('github'));
 
+<<<<<<< Updated upstream
 // 4. Leveled API Keys
 const apiKeyMiddleware = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
@@ -214,4 +207,15 @@ app.post('/validate', (req, res) => {
 const PORT = process.env.PORT || 0; // Use 0 to let the OS choose an available port
 const server = app.listen(PORT, () => {
   console.log(`Secure API is running on port ${server.address().port}`);
+=======
+// OAuth2 callback route for GitHub
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
+  // On successful login, you can redirect to a protected page
+  res.send(`You are authenticated with GitHub! Welcome, ${req.user.profile.username}`);
+});
+
+// Create HTTPS server and listen on port 4003
+https.createServer(credentials, app).listen(4003, () => {
+  console.log('HTTPS Server running on https://localhost:4003');
+>>>>>>> Stashed changes
 });
