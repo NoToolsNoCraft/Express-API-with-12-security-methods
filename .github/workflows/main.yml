@@ -27,25 +27,32 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Start the Express server
+      # Step 4: Install system dependencies (if required)
+      - name: Install system dependencies
+        run: sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 xvfb
+
+      # Step 5: Verify Cypress installation
+      - name: Verify Cypress installation
+        run: npx cypress --version
+
+      # Step 6: Fix Cypress permissions
+      - name: Fix Cypress permissions
+        run: chmod +x ./node_modules/.bin/cypress
+
+      # Step 7: Start Express server
       - name: Start Express server
         run: |
           nohup node your-express-server.js &
         env:
           NODE_ENV: test
 
-      # Step 5: Run Cypress test for OAuth
-      - name: Verify Cypress installation
-        run: npx cypress --version
-      - name: Run Cypress tests
-        run: npx cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
-      - name: Fix Cypress permissions
+      # Step 8: Run Cypress tests
       - name: Run Cypress tests
         run: ./node_modules/.bin/cypress run --spec "cypress/e2e/githubOAuth2.cy.js"
-      env:
-            CYPRESS_baseUrl: https://localhost:4003
-            CYPRESS_email: $EMAIL
-            CYPRESS_password: $PASSWORD
+        env:
+          CYPRESS_baseUrl: https://localhost:4003
+          CYPRESS_email: $EMAIL
+          CYPRESS_password: $PASSWORD
 
       # Step 6: Install Newman
       - name: Install Newman
