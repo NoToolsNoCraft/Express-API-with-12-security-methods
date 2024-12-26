@@ -35,7 +35,7 @@ app.get('/api/testData', (req, res) => {
 // }
 // It will update the array with an item with id: 4 and name: 'newData'
 app.post('/api/testData', (req, res) => {
-if(!req.body.name || req.body.name.lenght > 3) {
+if(!req.body.name || req.body.name.length > 3) {
     //If no object name has beed added in the body, or it is shorter than 3 characters then
     //throw error 400 Bad Request
     res.status(400).send('Name is required and should be minimum 3 characters long')
@@ -57,10 +57,19 @@ app.get('/api/testData/:id', (req, res) => {
 });
 
 app.get('/api/testData/:id', (req, res) => {
-    const test = testData.find(c => c.id === parseInt(req.params.id));
-    if (!test) res.status(404).send('The test with the given ID was not found');
+    const test = testData.find((c) => c.id === parseInt(req.params.id));
+    if (!test) return res.status(404).send('The test with the given ID was not found'); 
     res.send(test);
-})
+});
+
+app.post('/reset', (req, res) => {
+    testData.splice(0, testData.length, 
+        { id: 1, name: 'data1' },
+        { id: 2, name: 'data2' },
+        { id: 3, name: 'data3' }
+    );
+    res.send('Data reset to initial state');
+});
 
 const port = 2999; // Hardcoded port
 app.listen(port, () => console.log(`Listening on http://localhost:${port}...`));
