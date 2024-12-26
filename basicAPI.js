@@ -62,5 +62,5 @@ app.get('/api/testData/:id', (req, res) => {
     res.send(test);
 })
 
-const port = process.send.PORT || 2999;
-app.listen(port, () => console.log('Listening on port ${port}...'))
+const port = 2999; // Hardcoded port
+app.listen(port, () => console.log(`Listening on http://localhost:${port}...`));
