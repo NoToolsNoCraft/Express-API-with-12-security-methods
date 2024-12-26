@@ -1,0 +1,46 @@
+name: Run Postman Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Start the Express server
+      - name: Start Express server
+        run: node basicAPI.js &
+        env:
+          PORT: 2999
+
+      # Install Newman (Postman CLI) globally
+      - name: Install Newman
+        run: npm install -g newman
+
+      # Run Postman tests
+      - name: Run Postman tests
+        run: newman run basicAPITest.postman_collection --env-var "baseUrl=http://localhost:2999"
+
+      # Stop the server after tests
+      - name: Stop server
+        run: kill $(lsof -t -i:2999 || echo "Server already stopped")
