@@ -1,7 +1,7 @@
 describe('Automate GitHub OAuth Login', () => {
   it('Completes GitHub OAuth login flow', () => {
     // Start at your app's OAuth login endpoint
-    cy.visit('https://localhost:4003/', {
+    cy.visit('https://localhost:3006/', {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36' },
     });
     cy.visit('https://localhost:4003/auth/github');
