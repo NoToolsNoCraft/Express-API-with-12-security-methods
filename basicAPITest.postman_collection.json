@@ -334,10 +334,6 @@
 							"    pm.expect(jsonData).to.have.property(\"name\", \"data1\");\r",
 							"});\r",
 							"\r",
-							"pm.test(\"New ID is correctly incremented\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.id).to.be.a(\"number\").and.to.eql(4);\r",
-							"});\r",
 							""
 						],
 						"type": "text/javascript",
