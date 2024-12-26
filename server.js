@@ -42,14 +42,8 @@ app.get('/auth/github/callback', passport.authenticate('github', { failureRedire
   res.send(`You are authenticated with GitHub! Welcome, ${req.user.profile.username}`);
 });
 
-// HTTPS server setup
-const HTTP_PORT = 3006;
-if (privateKey && certificate) {
-  https.createServer(credentials, app).listen(4003, () => {
-    console.log('HTTPS Server running on https://localhost:4003');
-  });
-} else {
-  app.listen(HTTP_PORT, () => {
-    console.log(`Fallback HTTP server running on http://localhost:${HTTP_PORT}`);
-  });
-}
+// Create HTTPS server and listen on port 4003
+https.createServer(credentials, app).listen(4003, () => {
+  console.log('HTTPS Server running on https://localhost:4003');
+});
+
