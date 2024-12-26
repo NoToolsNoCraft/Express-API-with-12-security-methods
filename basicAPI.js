@@ -4,18 +4,9 @@ const app = express();
 app.use(express.json());
 
 const testData = [
-    {
-        id: 1,
-        name: 'data1'
-    },
-    {
-        id: 2,
-        name: 'data2'
-    },
-    {
-        id: 3,
-        name: 'data3'
-    }
+    { id: 1, name: 'data1' },
+    { id: 2, name: 'data2' },
+    { id: 3, name: 'data3' }
 ];
 
 app.get('/', (req, res) => {
@@ -23,7 +14,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/testData', (req, res) => {
-    res.send(testData);
+    const ids = testData.map((item) => item.id);
+    res.send(ids);
 });
 
 app.get('/api/testData/:id', (req, res) => {
@@ -38,8 +30,9 @@ app.post('/api/testData', (req, res) => {
         return;
     }
 
+    const maxId = testData.length > 0 ? Math.max(...testData.map((item) => item.id)) : 0;
     const test = {
-        id: testData.length + 1,
+        id: maxId + 1,
         name: req.body.name
     };
     testData.push(test);
