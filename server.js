@@ -13,8 +13,8 @@ const credentials = { key: privateKey, cert: certificate };
 
 // Set up Passport.js for GitHub OAuth2 authentication
 passport.use(new GitHubStrategy({
-  clientID: 'Ov23liFT0AS4dhXuRSow', // Replace with your GitHub Client ID
-  clientSecret: '082cc776a1332a0568c2aa861b9480d3703a45c4', // Replace with your GitHub Client Secret
+  clientID: '${{CLIENTID}}', // Replace with your GitHub Client ID
+  clientSecret: '${{CLIENTSECRET}}', // Replace with your GitHub Client Secret
   callbackURL: 'https://localhost:4003/auth/github/callback', // GitHub callback URL
 }, (accessToken, refreshToken, profile, done) => {
   return done(null, { accessToken, profile });
