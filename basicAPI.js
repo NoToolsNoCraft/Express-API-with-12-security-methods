@@ -30,7 +30,8 @@ app.post('/api/testData', (req, res) => {
         return;
     }
 
-    const maxId = testData.length > 0 ? Math.max(...testData.map((item) => item.id)) : 0;
+    // Always calculate the next ID based on the highest existing ID
+    const maxId = testData.reduce((max, item) => (item.id > max ? item.id : max), 0);
     const test = {
         id: maxId + 1,
         name: req.body.name
@@ -40,7 +41,9 @@ app.post('/api/testData', (req, res) => {
 });
 
 app.post('/reset', (req, res) => {
-    testData.splice(0, testData.length,
+    // Reset the array to the initial state
+    testData.length = 0; 
+    testData.push(
         { id: 1, name: 'data1' },
         { id: 2, name: 'data2' },
         { id: 3, name: 'data3' }
