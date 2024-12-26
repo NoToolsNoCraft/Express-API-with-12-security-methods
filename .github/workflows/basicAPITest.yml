@@ -33,6 +33,11 @@ jobs:
         env:
           PORT: 2999
 
+      # Reset server data
+      - name: Reset server data
+        run: |
+        curl -X POST http://localhost:2999/reset
+    
       # Install Newman (Postman CLI) globally
       - name: Install Newman
         run: npm install -g newman
