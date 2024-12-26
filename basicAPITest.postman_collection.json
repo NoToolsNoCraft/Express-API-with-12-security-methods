@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "bb1ae3a2-153b-4161-a6ef-701e1960427b",
+		"name": "basicAPITest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35095642"
+	},
+	"item": [
+		{
+			"name": "Initial request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains the initial message\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"This is the initial response\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:2999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get objects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains correct IDs\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.eql([1, 2, 3]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an array\", function () {\r",
+							"    pm.expect(pm.response.json()).to.be.an('array');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:2999/api/testData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a single object",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains correct data\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"id\", 1);\r",
+							"    pm.expect(jsonData).to.have.property(\"name\", \"data1\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:2999/api/testData/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET an incorrect single object Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains error message\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"The test with the given ID was not found\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:2999/api/testData/99",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData",
+						"99"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a new item to the array",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains new test data\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"name\", \"newData\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"New ID is sequential\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.be.a(\"number\").and.to.eql(4);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"newData\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:2999/api/testData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add an empty object to the array",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains validation error message\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"Name is required and should be minimum 3 characters long\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:2999/api/testData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Added object name is too short",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains validation error message\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"Name is required and should be minimum 3 characters long\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"ab\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:2999/api/testData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edge case",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains the duplicate name\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"name\", \"data1\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"New ID is correctly incremented\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.be.a(\"number\").and.to.eql(4);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"data1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:2999/api/testData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "2999",
+					"path": [
+						"api",
+						"testData"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
