@@ -39,7 +39,7 @@ jobs:
 
       # Run Postman tests
       - name: Run Postman tests
-        run: newman run basicAPITest.postman_collection --env-var "baseUrl=http://localhost:2999"
+        run: newman run basicAPITest.postman_collection.json --env-var "baseUrl=http://localhost:2999"
 
       # Stop the server after tests
       - name: Stop server
